@@ -44,8 +44,9 @@ export function TopBar() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <Select value={profile.plan} onValueChange={(v) => v && saveProfile({ plan: v as 'regular' | 'coop' })}>
-            <SelectTrigger size="sm" className="w-[112px]">
+          <Select value={profile.plan} items={{ regular: 'แผนปกติ', coop: 'แผนสหกิจ' }}
+            onValueChange={(v) => v && v !== profile.plan && saveProfile({ plan: v as 'regular' | 'coop' })}>
+            <SelectTrigger size="sm" className="w-28">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -53,8 +54,9 @@ export function TopBar() {
               <SelectItem value="coop">แผนสหกิจ</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={profile.geFramework} onValueChange={(v) => v && saveProfile({ geFramework: v as 'ge2565' | 'core2564' })}>
-            <SelectTrigger size="sm" className="w-[140px]">
+          <Select value={profile.geFramework} items={{ ge2565: 'GE 2565 · 132', core2564: 'สาระ 2564 · 138' }}
+            onValueChange={(v) => v && v !== profile.geFramework && saveProfile({ geFramework: v as 'ge2565' | 'core2564' })}>
+            <SelectTrigger size="sm" className="w-36">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

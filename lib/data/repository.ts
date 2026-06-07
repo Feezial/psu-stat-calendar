@@ -123,7 +123,7 @@ export async function listOverrides(): Promise<Override[]> {
   const supabase = createClient()
   const { data, error } = await supabase.from('requirement_overrides').select('*')
   if (error) throw error
-  return (data ?? []).map((r) => ({
+  return (data ?? []).map((r: Record<string, unknown>) => ({
     requirementId: r.requirement_id as string,
     takenCode: r.taken_code as string,
     term: r.term as string,

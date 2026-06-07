@@ -29,13 +29,15 @@ export default function PlanPage() {
         <h1 className="text-lg font-semibold">แผนการลงทะเบียน</h1>
         <div className="ml-auto flex items-center gap-2">
           <Label className="text-sm text-muted-foreground">เทอมที่จะลง:</Label>
-          <Select value={String(year)} onValueChange={(v) => v && saveProfile({ currentYear: Number(v) })}>
+          <Select value={String(year)} items={{ '1': 'ปี 1', '2': 'ปี 2', '3': 'ปี 3', '4': 'ปี 4' }}
+            onValueChange={(v) => v && saveProfile({ currentYear: Number(v) })}>
             <SelectTrigger size="sm" className="w-[90px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               {[1, 2, 3, 4].map((y) => <SelectItem key={y} value={String(y)}>ปี {y}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Select value={String(term)} onValueChange={(v) => v && saveProfile({ currentTerm: Number(v) })}>
+          <Select value={String(term)} items={{ '1': 'เทอม 1', '2': 'เทอม 2', '3': 'เทอม 3' }}
+            onValueChange={(v) => v && saveProfile({ currentTerm: Number(v) })}>
             <SelectTrigger size="sm" className="w-[110px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               {[1, 2, 3].map((t) => <SelectItem key={t} value={String(t)}>เทอม {t}</SelectItem>)}
