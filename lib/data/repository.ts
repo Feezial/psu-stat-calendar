@@ -15,7 +15,7 @@ async function uid(): Promise<string | null> {
 
 export async function getProfile(): Promise<Profile> {
   const supabase = createClient()
-  const { data } = await supabase.from('profiles').select('*').single()
+  const { data } = await supabase.from('profiles').select('*').maybeSingle()
   if (!data) return DEFAULT_PROFILE
   return {
     plan: data.plan ?? 'regular',
