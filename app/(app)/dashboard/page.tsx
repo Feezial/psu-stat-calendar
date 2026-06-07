@@ -9,6 +9,7 @@ import { StatusBadge, statusBarClass } from '../_components/status'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   FlaskConical, BookOpenCheck, Sigma, Languages, Sparkles, AlertTriangle, ArrowRight,
+  Hand, BookMarked, Target, Pin, CircleCheck,
 } from 'lucide-react'
 
 const CAT_ICON: Record<Category, typeof FlaskConical> = {
@@ -42,13 +43,19 @@ export default function DashboardPage() {
             <p className="text-sm font-medium text-white/65">
               {profile.plan === 'coop' ? 'แผนสหกิจ' : 'แผนปกติ'} · {profile.geFramework === 'core2564' ? 'สาระ 2564' : 'GE 2565'} · วท.บ. สถิติ
             </p>
-            <h2 className="text-2xl font-semibold tracking-tight md:text-[1.7rem]">สวัสดี, {name} 👋</h2>
+            <h2 className="flex items-center gap-2 text-2xl font-semibold tracking-tight md:text-[1.7rem]">
+              สวัสดี, {name} <Hand className="size-6 text-white/80" />
+            </h2>
             <p className="max-w-md text-sm text-white/75">
               เรียนผ่านแล้ว <span className="font-semibold text-white">{progress.totalDone}</span> จาก {progress.totalNeed} หน่วยกิต — เหลืออีกประมาณ <span className="font-semibold text-white">{remaining}</span> หน่วยกิตจบ
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <span className="rounded-full bg-white/12 px-3 py-1 text-xs font-medium text-white/90">📚 {taken.length} วิชาที่บันทึก</span>
-              <span className="rounded-full bg-white/12 px-3 py-1 text-xs font-medium text-white/90">🎯 เหลืออีก ~{remaining} นก</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1 text-xs font-medium text-white/90">
+                <BookMarked className="size-3.5" /> {taken.length} วิชาที่บันทึก
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1 text-xs font-medium text-white/90">
+                <Target className="size-3.5" /> เหลืออีก ~{remaining} นก
+              </span>
             </div>
           </div>
 
@@ -125,13 +132,17 @@ export default function DashboardPage() {
       <Card className="rounded-2xl border-border/70 shadow-sm">
         <CardContent className="space-y-4 p-5 md:p-6">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-foreground">📌 แนะนำลงเทอมหน้า · ปี {at.year} เทอม {at.term}</h3>
+            <h3 className="flex items-center gap-2 font-semibold text-foreground">
+              <Pin className="size-4 text-primary" /> แนะนำลงเทอมหน้า · ปี {at.year} เทอม {at.term}
+            </h3>
             <Link href="/plan" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
               ดูแผนเต็ม <ArrowRight className="size-4" />
             </Link>
           </div>
           {next.recommended.length === 0 ? (
-            <p className="text-sm text-muted-foreground">ไม่มีวิชาบังคับค้าง 🎉 — เลือกวิชาเลือก/เลือกเสรีตามสนใจได้</p>
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CircleCheck className="size-4 text-emerald-500" /> ไม่มีวิชาบังคับค้าง — เลือกวิชาเลือก/เลือกเสรีตามสนใจได้
+            </p>
           ) : (
             <div className="grid gap-2 sm:grid-cols-2">
               {next.recommended.map((x) => (

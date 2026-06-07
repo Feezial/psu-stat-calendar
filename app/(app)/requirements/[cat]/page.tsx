@@ -14,6 +14,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { ChevronLeft, AlertTriangle, Pin } from 'lucide-react'
 
 const VALID: Category[] = ['foundation', 'core', 'major_elective', 'ge', 'free_elective']
 
@@ -47,7 +48,9 @@ export default function RequirementCategoryPage() {
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-3">
-        <Link href="/dashboard" className="text-sm text-muted-foreground underline">← ภาพรวม</Link>
+        <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+          <ChevronLeft className="size-4" /> ภาพรวม
+        </Link>
         <h1 className="text-lg font-semibold">{CATEGORY_LABEL[cat]}</h1>
         <Badge variant="secondary" className="ml-auto tabular-nums">
           {catResult.doneCredits} / {catResult.needCredits} นก
@@ -88,14 +91,14 @@ export default function RequirementCategoryPage() {
                 )}
 
                 {r.verifyNote && (
-                  <div className="rounded-md bg-amber-50 px-2 py-1 text-xs text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
-                    ⚠️ {r.verifyNote}
+                  <div className="flex items-start gap-1.5 rounded-md bg-amber-50 px-2 py-1.5 text-xs text-amber-700">
+                    <AlertTriangle className="mt-px size-3.5 shrink-0" /> {r.verifyNote}
                   </div>
                 )}
 
                 {/* override: ปักหมุดวิชาเข้าช่องนี้เอง */}
                 <div className="flex items-center gap-2 pt-1">
-                  <span className="text-xs text-muted-foreground">ปักหมุดเอง:</span>
+                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Pin className="size-3.5" /> ปักหมุดเอง:</span>
                   <Select value={ovForThis ? `${ovForThis.takenCode}|${ovForThis.term}` : ''}
                     onValueChange={(v) => v && pin(r.id, v)}>
                     <SelectTrigger size="sm" className="w-[230px]">

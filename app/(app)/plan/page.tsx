@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
+import { CircleCheck, CircleAlert } from 'lucide-react'
 
 export default function PlanPage() {
   const { profile, taken, overrides, saveProfile } = useAppData()
@@ -55,7 +56,9 @@ export default function PlanPage() {
         </CardHeader>
         <CardContent>
           {next.recommended.length === 0 ? (
-            <p className="text-sm text-muted-foreground">ไม่มีวิชาบังคับค้างสำหรับเทอมนี้ 🎉</p>
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CircleCheck className="size-4 text-emerald-500" /> ไม่มีวิชาบังคับค้างสำหรับเทอมนี้
+            </p>
           ) : (
             <ul className="space-y-2 text-sm">
               {next.recommended.map((x) => (
@@ -80,7 +83,7 @@ export default function PlanPage() {
             <ul className="space-y-2 text-sm">
               {next.carryOver.map((x, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="text-amber-600">●</span>
+                  <CircleAlert className="mt-0.5 size-4 shrink-0 text-amber-500" />
                   <span><span className="font-medium">{x.name}</span> — <span className="text-muted-foreground">{x.reason}</span></span>
                 </li>
               ))}

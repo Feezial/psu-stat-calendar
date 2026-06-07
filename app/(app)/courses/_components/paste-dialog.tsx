@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { parseSisTranscript } from '@/lib/engine/parse-transcript'
 import type { TakenCourse } from '@/lib/types'
 import { ImportPreview } from './import-preview'
+import { ClipboardPaste } from 'lucide-react'
 
 export function PasteDialog({ onImport }: { onImport: (rows: TakenCourse[]) => Promise<void> }) {
   const [open, setOpen] = useState(false)
@@ -33,7 +34,7 @@ export function PasteDialog({ onImport }: { onImport: (rows: TakenCourse[]) => P
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="outline">วางข้อความ</Button>} />
+      <DialogTrigger render={<Button variant="outline"><ClipboardPaste className="size-4" /> วางข้อความ</Button>} />
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>วางข้อความผลการเรียนจาก SIS</DialogTitle>

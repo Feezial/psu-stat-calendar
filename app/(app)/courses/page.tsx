@@ -15,6 +15,7 @@ import type { TakenCourse } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
+import { Plus, Pencil, Trash2 } from 'lucide-react'
 
 export default function CoursesPage() {
   const { taken, refresh } = useAppData()
@@ -61,7 +62,7 @@ export default function CoursesPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center gap-2">
         <h1 className="mr-auto text-lg font-semibold">รายวิชาที่เรียนแล้ว ({taken.length})</h1>
-        <CourseFormDialog title="เพิ่มรายวิชา" trigger={<Button>+ เพิ่มรายวิชา</Button>} onSubmit={handleAdd} />
+        <CourseFormDialog title="เพิ่มรายวิชา" trigger={<Button><Plus className="size-4" /> เพิ่มรายวิชา</Button>} onSubmit={handleAdd} />
         <PdfImportButton onImport={handleImport} />
         <PasteDialog onImport={handleImport} />
         {taken.length === 0 && (
@@ -94,8 +95,10 @@ export default function CoursesPage() {
                       <td className="px-2 py-2 text-center"><GradeBadge grade={t.grade} /></td>
                       <td className="py-2 pl-2 pr-4 text-right">
                         <CourseFormDialog title="แก้ไขรายวิชา" initial={t} onSubmit={handleEdit}
-                          trigger={<Button variant="ghost" size="sm">แก้</Button>} />
-                        <Button variant="ghost" size="sm" className="text-rose-600" onClick={() => handleDelete(t.id)}>ลบ</Button>
+                          trigger={<Button variant="ghost" size="icon-sm" aria-label="แก้ไข"><Pencil className="size-4" /></Button>} />
+                        <Button variant="ghost" size="icon-sm" aria-label="ลบ" className="text-rose-600 hover:text-rose-700" onClick={() => handleDelete(t.id)}>
+                          <Trash2 className="size-4" />
+                        </Button>
                       </td>
                     </tr>
                   ))}
