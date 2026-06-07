@@ -1,10 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useAppData } from './app-data'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
@@ -16,39 +14,39 @@ const NAV = [
   { href: '/plan', label: 'แผนเทอมหน้า' },
 ]
 
-export function TopBar() {
-  const { profile, saveProfile, email } = useAppData()
-  const pathname = usePathname()
-  const router = useRouter()
+const TITLES: Record<string, string> = {
+  '/dashboard': 'ภาพรวม',
+  '/courses': 'รายวิชาที่เรียน',
+  '/plan': 'แผนเทอมหน้า',
+  '/requirements': 'รายละเอียดหมวด',
+}
 
-  async function signOut() {
-    await createClient().auth.signOut()
-    router.replace('/login')
-  }
+export function TopBar() {
+  const { profile, saveProfile } = useAppData()
+  const pathname = usePathname()
+  const title = Object.entries(TITLES).find(([k]) => pathname.startsWith(k))?.[1] ?? ''
 
   return (
-    <header className="border-b bg-card">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
-        <Link href="/dashboard" className="font-semibold tracking-tight">
-          PSU Stat Checker
-        </Link>
-        <nav className="flex items-center gap-1 text-sm">
+    <header className="sticky top-0 z-20 border-b border-border/70 bg-background/75 backdrop-blur-md">
+      <div className="flex items-center gap-3 px-4 py-3 md:px-8">
+        <Link href="/dashboard" className="font-semibold tracking-tight text-primary md:hidden">PSU Stat</Link>
+        <h1 className="hidden text-lg font-semibold tracking-tight text-foreground md:block">{title}</h1>
+
+        {/* mobile nav */}
+        <nav className="flex items-center gap-0.5 text-sm md:hidden">
           {NAV.map((n) => (
             <Link key={n.href} href={n.href}
-              className={cn(
-                'rounded-md px-3 py-1.5 transition-colors hover:bg-accent',
-                pathname.startsWith(n.href) ? 'bg-accent font-medium' : 'text-muted-foreground',
-              )}>
+              className={cn('rounded-lg px-2.5 py-1.5 transition-colors',
+                pathname.startsWith(n.href) ? 'bg-accent font-medium text-accent-foreground' : 'text-muted-foreground')}>
               {n.label}
             </Link>
           ))}
         </nav>
+
         <div className="ml-auto flex items-center gap-2">
           <Select value={profile.plan} items={{ regular: 'แผนปกติ', coop: 'แผนสหกิจ' }}
             onValueChange={(v) => v && v !== profile.plan && saveProfile({ plan: v as 'regular' | 'coop' })}>
-            <SelectTrigger size="sm" className="w-28">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger size="sm" className="w-28 rounded-xl"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="regular">แผนปกติ</SelectItem>
               <SelectItem value="coop">แผนสหกิจ</SelectItem>
@@ -56,16 +54,12 @@ export function TopBar() {
           </Select>
           <Select value={profile.geFramework} items={{ ge2565: 'GE 2565 · 132', core2564: 'สาระ 2564 · 138' }}
             onValueChange={(v) => v && v !== profile.geFramework && saveProfile({ geFramework: v as 'ge2565' | 'core2564' })}>
-            <SelectTrigger size="sm" className="w-36">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger size="sm" className="w-36 rounded-xl"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="ge2565">GE 2565 · 132</SelectItem>
               <SelectItem value="core2564">สาระ 2564 · 138</SelectItem>
             </SelectContent>
           </Select>
-          <span className="hidden text-xs text-muted-foreground sm:inline">{email}</span>
-          <Button variant="ghost" size="sm" onClick={signOut}>ออก</Button>
         </div>
       </div>
     </header>
