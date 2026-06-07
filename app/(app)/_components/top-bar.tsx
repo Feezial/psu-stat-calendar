@@ -45,12 +45,21 @@ export function TopBar() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <Select value={profile.plan} onValueChange={(v) => v && saveProfile({ plan: v as 'regular' | 'coop' })}>
-            <SelectTrigger size="sm" className="w-[130px]">
+            <SelectTrigger size="sm" className="w-[112px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="regular">แผนปกติ</SelectItem>
               <SelectItem value="coop">แผนสหกิจ</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={profile.geFramework} onValueChange={(v) => v && saveProfile({ geFramework: v as 'ge2565' | 'core2564' })}>
+            <SelectTrigger size="sm" className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ge2565">GE 2565 · 132</SelectItem>
+              <SelectItem value="core2564">สาระ 2564 · 138</SelectItem>
             </SelectContent>
           </Select>
           <span className="hidden text-xs text-muted-foreground sm:inline">{email}</span>

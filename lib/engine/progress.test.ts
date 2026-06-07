@@ -54,6 +54,25 @@ describe('computeProgress (coop)', () => {
   })
 })
 
+describe('computeProgress (preset สาระ 2564, 138 นก)', () => {
+  const prog = buildProgram('regular', 'core2564')
+  const r = computeProgress(prog, SEED_6710210764, [])
+  const req = (id: string) => r.requirements.find((x) => x.id === id)!
+
+  it('รวมหลักสูตร 138 และมีสาระ 1–7', () => {
+    expect(prog.totalCredits).toBe(138)
+    expect(req('sara:1')).toBeTruthy()
+    expect(req('sara:7')).toBeTruthy()
+  })
+  it('สาระ 6 (ภาษา) ครบ, สาระ 5 ยังไม่ครบ (ขาดส่วนตัวเลข)', () => {
+    expect(req('sara:6').status).toBe('done')
+    expect(req('sara:5').status).not.toBe('done')
+  })
+  it('สาระ 1 ครบ (388-100 + 003-001 = 4)', () => {
+    expect(req('sara:1').status).toBe('done')
+  })
+})
+
 describe('suggestNextTerm', () => {
   it('แนะนำวิชาปี3เทอม1 ที่ยังไม่ผ่าน (รวม 346-321/346-322/346-331/346-361)', () => {
     const prog = buildProgram('regular', 'ge2565')

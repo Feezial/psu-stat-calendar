@@ -27,7 +27,9 @@ export default function DashboardPage() {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center justify-between text-base">
             <span>ความคืบหน้ารวม</span>
-            <Badge variant="secondary">{profile.plan === 'coop' ? 'แผนสหกิจ' : 'แผนปกติ'} · GE 2565</Badge>
+            <Badge variant="secondary">
+              {profile.plan === 'coop' ? 'แผนสหกิจ' : 'แผนปกติ'} · {profile.geFramework === 'core2564' ? 'สาระ 2564' : 'GE 2565'}
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">

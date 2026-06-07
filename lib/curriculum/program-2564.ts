@@ -155,6 +155,51 @@ const GE_2565: Requirement[] = [
   },
 ]
 
+// ── GE หลักสูตรสถิติ 2564 เดิม (สาระ 1–7, 30 นก) — preset ทางเลือก ──
+// รองรับทั้งรหัสเก่าและรหัส GE กลางใหม่ (equivalent) ในแต่ละสาระ
+const GE_CORE_2564: Requirement[] = [
+  {
+    kind: 'choose', id: 'sara:1', category: 'ge', label: 'สาระ 1 ศาสตร์พระราชาและประโยชน์เพื่อนมนุษย์ (4)',
+    needCredits: 4, recYear: 1, recTerm: 1,
+    options: opt(['001-102', '388-100', '315-200', '003-001', '003-001G6', '388-100G5']),
+  },
+  {
+    kind: 'choose', id: 'sara:2', category: 'ge', label: 'สาระ 2 ความเป็นพลเมืองและชีวิตที่สันติ (5)',
+    needCredits: 5, recYear: 1, recTerm: 1,
+    options: opt(['950-102', '895-001', '950-102G5']),
+  },
+  {
+    kind: 'choose', id: 'sara:3', category: 'ge', label: 'สาระ 3 การเป็นผู้ประกอบการ (1)',
+    needCredits: 1, recYear: 2, recTerm: 2,
+    options: opt(['001-103', '460-001', '460-001G3']),
+  },
+  {
+    kind: 'choose', id: 'sara:4', category: 'ge', label: 'สาระ 4 การอยู่อย่างรู้เท่าทันและการรู้ดิจิทัล (4)',
+    needCredits: 4, recYear: 1, recTerm: 2,
+    options: opt(['315-201', '345-104', '315-104G4', '315-201G7', '200-104G4']),
+  },
+  {
+    kind: 'choose', id: 'sara:5', category: 'ge', label: 'สาระ 5 การคิดเชิงระบบ ตรรกะและตัวเลข (4)',
+    needCredits: 4, recYear: 2, recTerm: 1,
+    options: opt(['315-202', '315-202G2B', '142-129', '472-118', '473-001G2A', '895-211G2A', '315-100G2A', '322-100G2A']),
+    verifyNote: 'ต้องมีทั้งส่วน "คิดเชิงระบบ" และ "ตรรกะ/ตัวเลข" อย่างละ 2 นก — ตรวจกับอาจารย์ที่ปรึกษา',
+  },
+  {
+    kind: 'choose', id: 'sara:6', category: 'ge', label: 'สาระ 6 ภาษาและการสื่อสาร (4)',
+    needCredits: 4, recYear: 1, recTerm: 2,
+    options: opt(['890-002', '890-003', '890-004', '890-005', '890-102G1', '890-103G1', '890-104G1', '890-105G1']),
+  },
+  {
+    kind: 'choose', id: 'sara:7', category: 'ge', label: 'สาระ 7 สุนทรียศาสตร์และกีฬา (2)',
+    needCredits: 2, recYear: 2, recTerm: 1,
+    options: opt(['340-162', '061-001', '315-102G8', '895-020', '895-021', '895-023', '895-024', '895-030', '895-037']),
+  },
+  {
+    kind: 'bucket', id: 'sara:elective', category: 'ge', label: 'วิชาเลือกศึกษาทั่วไป (6)',
+    needCredits: 6, eligible: 'ge8', recYear: 1, recTerm: 2,
+  },
+]
+
 const FREE_ELECTIVE: Requirement = {
   kind: 'bucket',
   id: 'free',
@@ -168,8 +213,7 @@ const FREE_ELECTIVE: Requirement = {
 }
 
 export function buildProgram(plan: Plan, geFramework: GeFramework): Program {
-  // ปัจจุบันรองรับ GE1–8 (2565) เป็นหลัก; preset สาระ 1–7 (2564) เพิ่มภายหลังได้
-  const geReqs = GE_2565
+  const geReqs = geFramework === 'core2564' ? GE_CORE_2564 : GE_2565
   const totalCredits = geFramework === 'ge2565' ? 132 : 138
   const requirements = [
     ...FOUNDATION,
