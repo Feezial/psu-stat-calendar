@@ -97,11 +97,11 @@ export default function RequirementCategoryPage() {
                 )}
 
                 {/* override: ปักหมุดวิชาเข้าช่องนี้เอง */}
-                <div className="flex items-center gap-2 pt-1">
+                <div className="flex flex-wrap items-center gap-2 pt-1">
                   <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Pin className="size-3.5" /> ปักหมุดเอง:</span>
                   <Select value={ovForThis ? `${ovForThis.takenCode}|${ovForThis.term}` : ''}
                     onValueChange={(v) => v && pin(r.id, v)}>
-                    <SelectTrigger size="sm" className="w-[230px]">
+                    <SelectTrigger size="sm" className="w-full sm:w-[230px]">
                       <SelectValue placeholder="เลือกวิชา…" />
                     </SelectTrigger>
                     <SelectContent>

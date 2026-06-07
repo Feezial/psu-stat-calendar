@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useAppData } from './app-data'
 import { Sidebar } from './sidebar'
 import { TopBar } from './top-bar'
+import { MobileNav } from './mobile-nav'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -41,8 +42,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
+        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8">{children}</main>
       </div>
+      <MobileNav />
     </div>
   )
 }

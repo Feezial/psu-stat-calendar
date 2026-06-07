@@ -85,25 +85,23 @@ export default function CoursesPage() {
               <CardTitle className="text-sm">ภาคการศึกษา {term}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <table className="w-full text-sm">
-                <tbody>
-                  {taken.filter((t) => t.term === term).map((t) => (
-                    <tr key={t.id ?? `${t.code}-${t.term}`} className="border-t">
-                      <td className="py-2 pl-4 pr-2 font-mono text-xs">{t.code}</td>
-                      <td className="px-2 py-2">{t.name}</td>
-                      <td className="px-2 py-2 text-center tabular-nums text-muted-foreground">{t.credits}</td>
-                      <td className="px-2 py-2 text-center"><GradeBadge grade={t.grade} /></td>
-                      <td className="py-2 pl-2 pr-4 text-right">
-                        <CourseFormDialog title="แก้ไขรายวิชา" initial={t} onSubmit={handleEdit}
-                          trigger={<Button variant="ghost" size="icon-sm" aria-label="แก้ไข"><Pencil className="size-4" /></Button>} />
-                        <Button variant="ghost" size="icon-sm" aria-label="ลบ" className="text-rose-600 hover:text-rose-700" onClick={() => handleDelete(t.id)}>
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <ul className="divide-y divide-border">
+                {taken.filter((t) => t.term === term).map((t) => (
+                  <li key={t.id ?? `${t.code}-${t.term}`} className="flex items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4">
+                    <span className="w-18 shrink-0 font-mono text-xs text-primary sm:w-24">{t.code}</span>
+                    <span className="min-w-0 flex-1 truncate text-sm" title={t.name}>{t.name}</span>
+                    <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{t.credits} นก</span>
+                    <GradeBadge grade={t.grade} />
+                    <div className="flex shrink-0 items-center">
+                      <CourseFormDialog title="แก้ไขรายวิชา" initial={t} onSubmit={handleEdit}
+                        trigger={<Button variant="ghost" size="icon-sm" aria-label="แก้ไข"><Pencil className="size-4" /></Button>} />
+                      <Button variant="ghost" size="icon-sm" aria-label="ลบ" className="text-rose-600 hover:text-rose-700" onClick={() => handleDelete(t.id)}>
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </CardContent>
           </Card>
         ))
