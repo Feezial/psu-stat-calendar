@@ -9,8 +9,8 @@ const DEFAULT_PROFILE: Profile = {
 
 async function uid(): Promise<string | null> {
   const supabase = createClient()
-  const { data } = await supabase.auth.getUser()
-  return data.user?.id ?? null
+  const { data } = await supabase.auth.getSession()
+  return data.session?.user?.id ?? null
 }
 
 export async function getProfile(): Promise<Profile> {

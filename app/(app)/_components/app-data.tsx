@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient, hasSupabaseEnv } from '@/lib/supabase/client'
 import {
   getProfile, listTaken, listOverrides, upsertProfile,
@@ -27,7 +26,6 @@ const DEFAULT_PROFILE: Profile = { plan: 'regular', geFramework: 'ge2565', passT
 const Ctx = createContext<AppDataValue | null>(null)
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
-  const router = useRouter()
   const envOk = hasSupabaseEnv()
   const [loading, setLoading] = useState(true)
   const [email, setEmail] = useState<string | null>(null)
@@ -43,28 +41,42 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
+    if (!envOk) {
+      setLoading(false)
+      return
+    }
     let active = true
-    async function init() {
-      if (!envOk) {
-        setLoading(false)
+    let loadedFor: string | null = null
+    const supabase = createClient()
+
+    // โหลดข้อมูลเมื่อมี session (กันโหลดซ้ำด้วย loadedFor)
+    async function onSession(userId: string | undefined, email: string | null) {
+      if (!active || !userId || loadedFor === userId) {
+        if (active) setLoading(false)
         return
       }
-      const supabase = createClient()
-      const { data } = await supabase.auth.getUser()
-      if (!active) return
-      if (!data.user) {
-        router.replace('/login')
-        return
-      }
-      setEmail(data.user.email ?? null)
+      loadedFor = userId
+      setEmail(email)
       await loadAll()
       if (active) setLoading(false)
     }
-    init()
+
+    // เช็คครั้งแรก — ไม่ redirect เอง (proxy เป็นตัวกั้น auth อยู่แล้ว)
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) onSession(data.session.user.id, data.session.user.email ?? null)
+      else if (active) setLoading(false)
+    })
+
+    // ฟังการเปลี่ยนสถานะ — รองรับกรณี session มาช้าหลังโหลดหน้า
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) onSession(session.user.id, session.user.email ?? null)
+    })
+
     return () => {
       active = false
+      sub.subscription.unsubscribe()
     }
-  }, [envOk, router, loadAll])
+  }, [envOk, loadAll])
 
   const refresh = useCallback(async () => {
     await loadAll()

@@ -7,17 +7,17 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { parseTranscript } from '@/lib/engine/parse-transcript'
+import { parseSisTranscript } from '@/lib/engine/parse-transcript'
 import type { TakenCourse } from '@/lib/types'
-import { GradeBadge } from '../../_components/status'
+import { ImportPreview } from './import-preview'
 
 export function PasteDialog({ onImport }: { onImport: (rows: TakenCourse[]) => Promise<void> }) {
   const [open, setOpen] = useState(false)
-  const [term, setTerm] = useState('')
+  const [fallbackTerm, setFallbackTerm] = useState('')
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
 
-  const parsed = term.trim() ? parseTranscript(text, term.trim()) : []
+  const parsed = parseSisTranscript(text, fallbackTerm.trim())
 
   async function confirm() {
     setBusy(true)
@@ -25,6 +25,7 @@ export function PasteDialog({ onImport }: { onImport: (rows: TakenCourse[]) => P
       await onImport(parsed)
       setOpen(false)
       setText('')
+      setFallbackTerm('')
     } finally {
       setBusy(false)
     }
@@ -32,46 +33,33 @@ export function PasteDialog({ onImport }: { onImport: (rows: TakenCourse[]) => P
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="outline">วางจาก SIS</Button>} />
+      <DialogTrigger render={<Button variant="outline">วางข้อความ</Button>} />
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>วางข้อความ transcript จาก SIS</DialogTitle>
-          <DialogDescription>คัดลอกตารางผลการเรียนของเทอมหนึ่ง แล้ววางที่นี่ ระบบจะแยกรหัส/เกรดให้</DialogDescription>
+          <DialogTitle>วางข้อความผลการเรียนจาก SIS</DialogTitle>
+          <DialogDescription>
+            วางข้อความ (รองรับหลายเทอม ระบบตรวจหัว &quot;ภาคการศึกษา&quot; ให้อัตโนมัติ) — หรือใช้ปุ่ม &quot;นำเข้า PDF&quot; ก็ได้
+          </DialogDescription>
         </DialogHeader>
+
         <div className="space-y-3">
           <div className="space-y-1.5">
-            <Label htmlFor="pterm">เทอมของข้อมูลนี้</Label>
-            <Input id="pterm" className="w-40" value={term} onChange={(e) => setTerm(e.target.value)} placeholder="1/2569" />
-          </div>
-          <div className="space-y-1.5">
             <Label htmlFor="ptext">ข้อความ</Label>
-            <textarea id="ptext" value={text} onChange={(e) => setText(e.target.value)} rows={8}
+            <textarea id="ptext" value={text} onChange={(e) => setText(e.target.value)} rows={7}
               className="w-full rounded-md border bg-transparent px-3 py-2 font-mono text-xs"
-              placeholder={'346-321 MATHEMATICAL STATISTICS II 01 3 B\n346-322 SAMPLING TECHNIQUES 01 3 C'} />
+              placeholder={'ภาคการศึกษา 1/2569\n346-321 MATHEMATICAL STATISTICS II 01 3 B'} />
           </div>
-          {parsed.length > 0 && (
-            <div className="max-h-48 overflow-auto rounded-md border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-xs text-muted-foreground">
-                  <tr><th className="p-2 text-left">รหัส</th><th className="p-2 text-left">ชื่อ</th><th className="p-2">นก</th><th className="p-2">เกรด</th></tr>
-                </thead>
-                <tbody>
-                  {parsed.map((r, i) => (
-                    <tr key={i} className="border-t">
-                      <td className="p-2 font-mono text-xs">{r.code}</td>
-                      <td className="p-2">{r.name}</td>
-                      <td className="p-2 text-center tabular-nums">{r.credits}</td>
-                      <td className="p-2 text-center"><GradeBadge grade={r.grade} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {term.trim() && text.trim() && parsed.length === 0 && (
-            <p className="text-sm text-rose-600">แยกข้อมูลไม่ได้ — ตรวจรูปแบบ &quot;รหัส ชื่อ ตอน หน่วยกิต เกรด&quot;</p>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="fterm" className="text-xs text-muted-foreground">เทอม (เฉพาะกรณีไม่มีหัว &quot;ภาคการศึกษา&quot;)</Label>
+            <Input id="fterm" className="w-32" value={fallbackTerm}
+              onChange={(e) => setFallbackTerm(e.target.value)} placeholder="1/2569" />
+          </div>
+          <ImportPreview rows={parsed} />
+          {text.trim() && parsed.length === 0 && (
+            <p className="text-sm text-rose-600">ยังแยกวิชาไม่ได้ — ต้องมีหัว &quot;ภาคการศึกษา&quot; หรือใส่เทอมด้านบน และรูปแบบ &quot;รหัส ชื่อ ตอน หน่วยกิต เกรด&quot;</p>
           )}
         </div>
+
         <DialogFooter>
           <Button onClick={confirm} disabled={busy || parsed.length === 0}>
             {busy ? 'กำลังนำเข้า…' : `นำเข้า ${parsed.length} วิชา`}

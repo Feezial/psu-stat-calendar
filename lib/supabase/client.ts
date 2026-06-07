@@ -7,14 +7,16 @@ export function hasSupabaseEnv(): boolean {
   )
 }
 
-// Singleton: ใช้ client ตัวเดียวทั้งแอป — กัน GoTrueClient หลายตัวแย่ง Web Lock กันจน getUser() ค้าง
-let client: ReturnType<typeof createBrowserClient> | undefined
-
-export function createClient() {
-  if (client) return client
-  client = createBrowserClient(
+const make = () =>
+  createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   )
+
+// Singleton: client ตัวเดียวทั้งแอป — กัน GoTrueClient หลายตัวแย่ง Web Lock จน getUser/getSession ค้าง
+let client: ReturnType<typeof make> | undefined
+
+export function createClient() {
+  client ??= make()
   return client
 }

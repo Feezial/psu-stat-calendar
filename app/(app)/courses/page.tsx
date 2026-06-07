@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useAppData } from '../_components/app-data'
 import { CourseFormDialog } from './_components/course-form-dialog'
 import { PasteDialog } from './_components/paste-dialog'
+import { PdfImportButton } from './_components/pdf-import-button'
 import { GradeBadge } from '../_components/status'
 import {
   addTaken, updateTaken, deleteTaken, bulkAddTaken,
@@ -61,6 +62,7 @@ export default function CoursesPage() {
       <div className="flex flex-wrap items-center gap-2">
         <h1 className="mr-auto text-lg font-semibold">รายวิชาที่เรียนแล้ว ({taken.length})</h1>
         <CourseFormDialog title="เพิ่มรายวิชา" trigger={<Button>+ เพิ่มรายวิชา</Button>} onSubmit={handleAdd} />
+        <PdfImportButton onImport={handleImport} />
         <PasteDialog onImport={handleImport} />
         {taken.length === 0 && (
           <Button variant="secondary" onClick={loadSeed} disabled={busy}>
@@ -72,7 +74,7 @@ export default function CoursesPage() {
       {taken.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-muted-foreground">
-            ยังไม่มีข้อมูล — กด &quot;วางจาก SIS&quot; เพื่อนำเข้าผลการเรียน หรือ &quot;โหลดข้อมูลตัวอย่าง&quot;
+            ยังไม่มีข้อมูล — กด &quot;นำเข้า PDF&quot; (อัปโหลดไฟล์จาก SIS), &quot;วางข้อความ&quot; หรือ &quot;โหลดข้อมูลตัวอย่าง&quot;
           </CardContent>
         </Card>
       ) : (
