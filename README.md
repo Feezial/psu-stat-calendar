@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PSU Stat Curriculum Checker
 
-## Getting Started
+เว็บเช็คหน่วยกิต/ความคืบหน้าหลักสูตร **วท.บ. สถิติ — ม.อ. หาดใหญ่ (ปรับปรุง 2564)**
+บอกว่าเรียนครบ/ขาดวิชาอะไร และแนะนำวิชาที่ควรลงเทอมหน้า รองรับทั้ง **แผนปกติ/สหกิจ**
 
-First, run the development server:
+> Next.js (App Router) · shadcn/ui · Tailwind · Supabase (Auth + Postgres + RLS)
+
+## ฟีเจอร์
+- 📊 **ภาพรวม** — ความคืบหน้ารวม (เริ่มต้น 132 นก ตามโครง GE 2565) + แยกตามหมวด
+- ✅ **เช็คครบ/ขาด** — เกณฑ์ผ่าน D ขึ้นไป, จับ retake/วิชาซ้ำอัตโนมัติ, นับวิชา 1 ตัวครั้งเดียว
+- 📌 **แนะนำเทอมหน้า** — อิงแผนการเรียน + วิชาที่ยังไม่ผ่าน
+- 📥 **นำเข้าข้อมูล** — วางข้อความจาก SIS แล้วแยกอัตโนมัติ / เพิ่ม-แก้เอง / โหลดตัวอย่าง
+- 🔁 **แผนปกติ/สหกิจ** สลับได้ + ⚠️ ธงจุดที่ต้องยืนยัน (ช่วงเปลี่ยนระบบ GE)
+- ☁️ **บัญชี + คลาวด์** ซิงค์ข้ามเครื่อง (Supabase, ข้อมูลเป็นส่วนตัวด้วย RLS)
+
+## เริ่มใช้งาน
+ดูขั้นตอนเต็มใน **[SETUP.md](SETUP.md)** (สร้าง Supabase + ใส่ env + รัน)
 
 ```bash
+npm install
+cp .env.example .env.local   # เติมค่า Supabase
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ทดสอบเอนจิน
+```bash
+npm test      # Vitest — ตรวจความถูกต้องด้วย transcript ตัวอย่างจริง (16 เคส)
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## โครงสร้าง
+- `lib/curriculum/` — ข้อมูลหลักสูตร (รายวิชา, แคตตาล็อก GE1–8, โครงสร้างหมวด, seed)
+- `lib/engine/` — ตรรกะเช็คครบ (pure TS, ทดสอบเต็ม): เกรด, จับคู่, ความคืบหน้า, parser
+- `lib/data/`, `lib/supabase/` — ชั้นข้อมูลผู้ใช้ (Supabase)
+- `app/(app)/` — หน้า dashboard / courses / requirements / plan
+- `supabase/migrations/` — schema + RLS
+- `docs/` — สเปคและแผนงาน · `research/` — เอกสารหลักสูตรอ้างอิง
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ⚠️ หมายเหตุเรื่อง GE
+ม.อ. อยู่ช่วงเปลี่ยนระบบ GE (หลักสูตร 2564 = สาระ 30 นก ↔ GE กลาง 2565 = GE1–8 24 นก)
+แอปยึด **GE1–8 (132 นก)** เป็นค่าเริ่มต้น และขึ้นธง ⚠️ ตรงจุดกำกวม
+**โปรดยืนยันกับอาจารย์ที่ปรึกษา/ตรวจสอบใน SIS ก่อนใช้ตัดสินใจจริง**
