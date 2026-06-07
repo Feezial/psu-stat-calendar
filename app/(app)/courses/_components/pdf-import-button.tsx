@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
@@ -12,11 +12,8 @@ import { ImportPreview } from './import-preview'
 import { toast } from 'sonner'
 import { FileUp, Loader2 } from 'lucide-react'
 
-// คลาสปุ่มสไตล์ outline (label ทำเป็นปุ่มเอง — กดแล้วเปิด file chooser ได้โดยไม่ชน dialog)
-const BTN =
-  'inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-input bg-transparent px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent [&_svg]:size-4 [&_svg]:shrink-0 data-disabled:pointer-events-none data-disabled:opacity-50'
-
 export function PdfImportButton({ onImport }: { onImport: (rows: TakenCourse[]) => Promise<void> }) {
+  const inputRef = useRef<HTMLInputElement>(null)
   const [rows, setRows] = useState<TakenCourse[]>([])
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -55,15 +52,16 @@ export function PdfImportButton({ onImport }: { onImport: (rows: TakenCourse[]) 
 
   return (
     <>
-      <label className={BTN} data-disabled={extracting || undefined}>
+      {/* hidden input — สั่งเปิดด้วย ref จากปุ่ม (เชื่อถือได้กว่า label) */}
+      <input ref={inputRef} type="file" accept="application/pdf,.pdf" className="hidden"
+        aria-hidden="true" tabIndex={-1} onChange={onPick} />
+      <Button variant="outline" disabled={extracting} onClick={() => inputRef.current?.click()}>
         {extracting ? (
           <><Loader2 className="size-4 animate-spin" /> กำลังอ่าน PDF…</>
         ) : (
           <><FileUp className="size-4" /> นำเข้า PDF</>
         )}
-        <input type="file" accept="application/pdf,.pdf" className="sr-only"
-          aria-label="เลือกไฟล์ PDF จาก SIS" onChange={onPick} disabled={extracting} />
-      </label>
+      </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl">
