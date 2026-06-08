@@ -1,7 +1,7 @@
 'use client'
 
 import type { TakenCourse } from '@/lib/types'
-import { GradeBadge } from '../../_components/status'
+import { GradeBadge } from '@/components/common/status'
 
 export function ImportPreview({ rows }: { rows: TakenCourse[] }) {
   if (rows.length === 0) return null

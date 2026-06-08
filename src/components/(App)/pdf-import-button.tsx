@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { parseSisTranscript } from '@/lib/engine/parse-transcript'
 import { extractPdfText } from '@/lib/engine/pdf-extract'
 import type { TakenCourse } from '@/lib/types'
-import { ImportPreview } from './import-preview'
+import { ImportPreview } from '@/components/(App)/import-preview'
 import { toast } from 'sonner'
 import { FileUp, Loader2 } from 'lucide-react'
 

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Kanit } from 'next/font/google'
-import './globals.css'
+import '@/styles/globals.css'
 import { Toaster } from '@/components/ui/sonner'
 
 const kanit = Kanit({

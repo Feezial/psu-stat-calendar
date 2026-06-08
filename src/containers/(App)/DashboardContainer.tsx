@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useAppData } from '../_components/app-data'
+import { useAppData } from '@/hooks/use-app-data'
 import { CATEGORY_LABEL, suggestNextTerm } from '@/lib/engine/progress'
 import type { Category } from '@/lib/curriculum/types'
 import { buildProgram } from '@/lib/curriculum/program-2564'
-import { StatusBadge, statusBarClass } from '../_components/status'
+import { StatusBadge, statusBarClass } from '@/components/common/status'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   FlaskConical, BookOpenCheck, Sigma, Languages, Sparkles, AlertTriangle, ArrowRight,

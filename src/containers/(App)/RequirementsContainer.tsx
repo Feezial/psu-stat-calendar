@@ -2,8 +2,8 @@
 
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { useAppData } from '../../_components/app-data'
-import { StatusBadge } from '../../_components/status'
+import { useAppData } from '@/hooks/use-app-data'
+import { StatusBadge } from '@/components/common/status'
 import { CATEGORY_LABEL } from '@/lib/engine/progress'
 import type { Category } from '@/lib/curriculum/types'
 import { setOverride, clearOverride } from '@/lib/data/repository'

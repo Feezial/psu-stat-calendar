@@ -1,5 +1,5 @@
-import { AppDataProvider } from './_components/app-data'
-import { AppShell } from './_components/app-shell'
+import { AppDataProvider } from '@/contexts/app-data'
+import { AppShell } from '@/components/(App)/app-shell'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,6 +1,6 @@
 'use client'
 
-import { useAppData } from '../_components/app-data'
+import { useAppData } from '@/hooks/use-app-data'
 import { suggestNextTerm } from '@/lib/engine/progress'
 import { buildProgram } from '@/lib/curriculum/program-2564'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

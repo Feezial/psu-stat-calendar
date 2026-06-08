@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { GraduationCap, Mail, Lock, Eye, EyeOff, Loader2, ShieldAlert } from 'lucide-react'
+import { AuthShell } from '@/components/(Auth)/AuthShell'
 
 /** โลโก้ Google สีจริง (inline เพื่อไม่ต้องพึ่ง asset ภายนอก) */
 function GoogleIcon({ className }: { className?: string }) {
@@ -19,35 +20,6 @@ function GoogleIcon({ className }: { className?: string }) {
       <path fill="#FBBC05" d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84Z" />
       <path fill="#EA4335" d="M12 5.38c1.62 0 3.07.56 4.21 1.64l3.15-3.15C17.46 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.05l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38Z" />
     </svg>
-  )
-}
-
-/** เปลือกพื้นหลังบรรยากาศ ใช้ร่วมกันทั้งหน้า config-missing และหน้า login */
-function AuthShell({ children }: { children: React.ReactNode }) {
-  return (
-    <main className="relative isolate flex flex-1 items-center justify-center overflow-hidden px-4 py-10">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[28rem] w-[46rem] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-48 -right-24 -z-10 h-96 w-96 rounded-full bg-chart-3/10 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="auth-grid pointer-events-none absolute inset-0 -z-10 opacity-40"
-      />
-      <div className="w-full max-w-md animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-4 duration-700">
-        <div className="relative overflow-hidden rounded-3xl bg-card p-7 shadow-xl shadow-primary/10 ring-1 ring-foreground/10 sm:p-8">
-          <div
-            aria-hidden
-            className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"
-          />
-          {children}
-        </div>
-      </div>
-    </main>
   )
 }
 

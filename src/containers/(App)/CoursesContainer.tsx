@@ -1,10 +1,10 @@
 'use client'
 
-import { useAppData } from '../_components/app-data'
-import { CourseFormDialog } from './_components/course-form-dialog'
-import { PasteDialog } from './_components/paste-dialog'
-import { PdfImportButton } from './_components/pdf-import-button'
-import { GradeBadge } from '../_components/status'
+import { useAppData } from '@/hooks/use-app-data'
+import { CourseFormDialog } from '@/components/(App)/course-form-dialog'
+import { PasteDialog } from '@/components/(App)/paste-dialog'
+import { PdfImportButton } from '@/components/(App)/pdf-import-button'
+import { GradeBadge } from '@/components/common/status'
 import {
   addTaken, updateTaken, deleteTaken, bulkAddTaken,
 } from '@/lib/data/repository'

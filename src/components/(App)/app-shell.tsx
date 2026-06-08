@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useAppData } from './app-data'
-import { Sidebar } from './sidebar'
-import { TopBar } from './top-bar'
-import { MobileNav } from './mobile-nav'
+import { useAppData } from '@/hooks/use-app-data'
+import { Sidebar } from '@/components/(App)/sidebar'
+import { TopBar } from '@/components/(App)/top-bar'
+import { MobileNav } from '@/components/(App)/mobile-nav'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 

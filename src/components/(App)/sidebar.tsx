@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useAppData } from './app-data'
+import { useAppData } from '@/hooks/use-app-data'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import { GraduationCap, LayoutDashboard, BookOpenCheck, CalendarClock, LogOut } from 'lucide-react'
