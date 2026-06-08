@@ -1,6 +1,7 @@
 import type { TakenCourse } from '@/lib/types'
 
-const PASSING = new Set(['A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'P', 'S'])
+// วิชาแบบวัดผ่าน/ไม่ผ่าน: G=Good, S=Satisfactory, P=Pass = "ผ่าน" (U=Unsatisfactory ไม่ผ่าน)
+const PASSING = new Set(['A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'P', 'S', 'G'])
 const POINTS: Record<string, number> = {
   A: 4, 'B+': 3.5, B: 3, 'C+': 2.5, C: 2, 'D+': 1.5, D: 1,
 }

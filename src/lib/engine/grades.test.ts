@@ -7,8 +7,12 @@ const tc = (code: string, grade: string, term: string): TakenCourse => ({
 })
 
 describe('isPass', () => {
-  it('ผ่านสำหรับ D ขึ้นไป และ P/S', () => {
-    for (const g of ['A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'P', 'S']) expect(isPass(g)).toBe(true)
+  it('ผ่านสำหรับ D ขึ้นไป และ P/S/G (วิชาวัดผ่าน/ไม่ผ่าน)', () => {
+    for (const g of ['A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'P', 'S', 'G']) expect(isPass(g)).toBe(true)
+  })
+  it('G = Good = ผ่าน (เช่น 388-100 HEALTH FOR ALL เกรด G)', () => {
+    expect(isPass('G')).toBe(true)
+    expect(isPass('g')).toBe(true)
   })
   it('ไม่ผ่านสำหรับ E,F,W,U,I และค่าว่าง', () => {
     for (const g of ['E', 'F', 'W', 'U', 'I', '']) expect(isPass(g)).toBe(false)
