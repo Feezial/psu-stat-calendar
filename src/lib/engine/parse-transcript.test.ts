@@ -50,3 +50,36 @@ describe('parseSisTranscript (หลายเทอมอัตโนมัต�
     expect(rows.every((r) => r.term)).toBe(true)
   })
 })
+
+describe('parseSisTranscript — รองรับรูปแบบที่หลากหลายขึ้น (regression "แยกวิชาไม่ได้")', () => {
+  it('หัวเทอม "ภาคการศึกษาที่ 1/2567" (มีคำว่า "ที่")', () => {
+    const r = parseSisTranscript('ภาคการศึกษาที่ 1/2567\n346-111 PRINCIPLES OF STATISTICS 01 3 A')
+    expect(r).toHaveLength(1)
+    expect(r[0]).toMatchObject({ code: '346-111', term: '1/2567', grade: 'A' })
+  })
+  it('หัวเทอม "ภาคเรียนที่ 2/2567"', () => {
+    const r = parseSisTranscript('ภาคเรียนที่ 2/2567\n322-102 CALCULUS II 01 3 B')
+    expect(r[0]).toMatchObject({ term: '2/2567', grade: 'B' })
+  })
+  it('หน่วยกิตแบบ 3(3-0-6) + คอลัมน์แต้มเฉลี่ยต่อท้าย', () => {
+    const r = parseSisTranscript('ภาคการศึกษาที่ 2/2567\n322-102 CALCULUS II 01 3(3-0-6) B+ 3.50')
+    expect(r[0]).toMatchObject({ code: '322-102', credits: 3, grade: 'B+', section: '01' })
+  })
+  it('ไม่มีคอลัมน์ตอน', () => {
+    const r = parseTranscript('145-101 COMPANION ANIMALS 3 A', '1/2567')
+    expect(r[0]).toMatchObject({ code: '145-101', name: 'COMPANION ANIMALS', credits: 3, grade: 'A', section: '' })
+  })
+  it('ภาคฤดูร้อน = เทอม 3', () => {
+    const r = parseSisTranscript('ภาคฤดูร้อน/2567\n322-102 CALCULUS II 02 3 D')
+    expect(r[0]).toMatchObject({ code: '322-102', term: '3/2567', grade: 'D' })
+  })
+  it('ชื่อวิชาภาษาไทยที่มีตัวเลขนำ', () => {
+    const r = parseTranscript('950-103G5 24 บอดี&มายด์ 01 2 B', '1/2567')
+    expect(r[0]).toMatchObject({ code: '950-103G5', name: '24 บอดี&มายด์', credits: 2, grade: 'B' })
+  })
+  it('ดึงวิชาได้แม้ไม่เจอหัวเทอม (term ว่าง — ดีกว่าได้ 0)', () => {
+    const r = parseSisTranscript('346-111 PRINCIPLES OF STATISTICS 01 3 A')
+    expect(r).toHaveLength(1)
+    expect(r[0].code).toBe('346-111')
+  })
+})
