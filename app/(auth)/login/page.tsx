@@ -51,6 +51,26 @@ function AuthShell({ children }: { children: React.ReactNode }) {
   )
 }
 
+const STRENGTH = [
+  null,
+  { label: 'อ่อนมาก', bar: 'bg-red-500', text: 'text-red-600' },
+  { label: 'อ่อน', bar: 'bg-orange-500', text: 'text-orange-600' },
+  { label: 'แข็งแรง', bar: 'bg-green-500', text: 'text-green-600' },
+  { label: 'แข็งแรงมาก', bar: 'bg-emerald-600', text: 'text-emerald-700' },
+] as const
+
+/** คะแนนความแข็งแรงรหัสผ่าน 1–4 (0 = ว่าง) — อิงความยาว + ความหลากหลายของตัวอักษร */
+function pwScore(pw: string): number {
+  if (!pw) return 0
+  let s = 0
+  if (pw.length >= 6) s++
+  if (pw.length >= 10) s++
+  const kinds = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((r) => r.test(pw)).length
+  if (kinds >= 2) s++
+  if (kinds >= 3) s++
+  return Math.min(4, Math.max(1, s))
+}
+
 export default function LoginPage() {
   const router = useRouter()
   const envOk = hasSupabaseEnv()
@@ -59,6 +79,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
+  const score = pwScore(password)
 
   if (!envOk) {
     return (
@@ -207,6 +228,24 @@ export default function LoginPage() {
               {showPw ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
+          {mode === 'signup' && password.length > 0 && (
+            <div className="space-y-1.5 pt-1" aria-live="polite">
+              <div className="flex gap-1.5">
+                {[1, 2, 3, 4].map((i) => (
+                  <span
+                    key={i}
+                    className={cn(
+                      'h-1.5 flex-1 rounded-full transition-colors duration-300',
+                      i <= score ? STRENGTH[score]!.bar : 'bg-border'
+                    )}
+                  />
+                ))}
+              </div>
+              <p className={cn('text-xs font-medium', STRENGTH[score]!.text)}>
+                ความปลอดภัย: {STRENGTH[score]!.label}
+              </p>
+            </div>
+          )}
         </div>
 
         <Button
