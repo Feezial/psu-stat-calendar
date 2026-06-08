@@ -1,5 +1,6 @@
 import type { Program, Requirement, Plan, GeFramework, Category } from './types'
 import { COURSES } from './courses'
+import { GE_CATALOG, type GeGroup } from './ge-catalog'
 
 /** สร้าง fixed requirement จากรหัสวิชา (label/credits ดึงจาก COURSES) */
 function fixed(
@@ -106,48 +107,50 @@ function majorElectives(plan: Plan): Requirement[] {
 // ── GE กลาง 2565 (GE1–8, 24 นก) ──
 const opt = (codes: string[]) => codes.map((code) => ({ code, credits: 2 }))
 
+/** options ของ GE choose = ทุกวิชาในแคตตาล็อกกลุ่มนั้น (GE_CATALOG = single source of truth)
+ *  + รหัสเก่า (ไม่มี suffix Gx) ที่ยังพบใน transcript ของรุ่นเปลี่ยนผ่าน
+ *  แก้บั๊ก: เดิม hardcode แค่ subset → วิชา GE ในแคตตาล็อกที่ไม่อยู่ในลิสต์จะไม่ถูกนับ */
+function geOptions(group: GeGroup, ...legacy: string[]): { code: string; credits: number }[] {
+  return [
+    ...GE_CATALOG.filter((c) => c.group === group).map((c) => ({ code: c.code, credits: c.credits })),
+    ...legacy.map((code) => ({ code, credits: 2 })),
+  ]
+}
+
 const GE_2565: Requirement[] = [
   {
     kind: 'choose', id: 'ge:GE1', category: 'ge', label: 'GE1 ภาษาและการสื่อสาร (4)',
-    needCredits: 4, recYear: 1, recTerm: 2,
-    options: opt(['890-102G1', '890-103G1', '890-104G1', '890-105G1']),
+    needCredits: 4, recYear: 1, recTerm: 2, options: geOptions('GE1'),
   },
   {
     kind: 'choose', id: 'ge:GE2A', category: 'ge', label: 'GE2A การคิดเชิงตรรกะและตัวเลข (2)',
-    needCredits: 2, recYear: 2, recTerm: 1,
-    options: opt(['895-211G2A', '315-100G2A', '322-100G2A', '473-001G2A', '473-002G2A', '142-010G2A']),
+    needCredits: 2, recYear: 2, recTerm: 1, options: geOptions('GE2A'),
   },
   {
     kind: 'choose', id: 'ge:GE2B', category: 'ge', label: 'GE2B การคิดเชิงระบบ (2)',
-    needCredits: 2, recYear: 2, recTerm: 1,
-    options: opt(['895-221G2B', '895-222G2B', '895-223G2B', '895-224G2B', '895-225G2B', '315-202G2B']),
+    needCredits: 2, recYear: 2, recTerm: 1, options: geOptions('GE2B'),
   },
   {
     kind: 'choose', id: 'ge:GE3', category: 'ge', label: 'GE3 การคิดแบบผู้ประกอบการ (2)',
-    needCredits: 2, recYear: 2, recTerm: 2,
-    options: opt(['895-301G3', '895-302G3', '460-001G3', '460-001']),
+    needCredits: 2, recYear: 2, recTerm: 2, options: geOptions('GE3', '460-001'),
     verifyNote: 'ถ้าลง 460-001 (1 นก รหัสเก่า) อาจไม่ครบ 2 นก ตามเกณฑ์ GE 2565 — ยืนยันกับอาจารย์ที่ปรึกษา/SIS',
   },
   {
     kind: 'choose', id: 'ge:GE4', category: 'ge', label: 'GE4 การใช้เทคโนโลยีดิจิทัล (2)',
-    needCredits: 2, recYear: 1, recTerm: 2,
-    options: opt(['315-104G4', '200-104G4', '200-107G4', '142-027G4', '345-103G4']),
+    needCredits: 2, recYear: 1, recTerm: 2, options: geOptions('GE4'),
   },
   {
     kind: 'choose', id: 'ge:GE5', category: 'ge', label: 'GE5 สุขภาวะองค์รวม (2)',
-    needCredits: 2, recYear: 1, recTerm: 1,
-    options: opt(['388-100G5', '895-501G5', '950-102G5', '670-111G5', '142-022G5', '388-100']),
+    needCredits: 2, recYear: 1, recTerm: 1, options: geOptions('GE5', '388-100'),
     verifyNote: 'ถ้าลง 388-100 (1 นก รหัสเก่า) อาจไม่ครบ 2 นก ตามเกณฑ์ GE 2565 — ยืนยันกับอาจารย์ที่ปรึกษา/SIS',
   },
   {
     kind: 'choose', id: 'ge:GE6', category: 'ge', label: 'GE6 จิตสาธารณะและการพัฒนาที่ยั่งยืน (2)',
-    needCredits: 2, recYear: 2, recTerm: 2,
-    options: opt(['895-601G6', '001-102G6', '003-001G6', '003-001']),
+    needCredits: 2, recYear: 2, recTerm: 2, options: geOptions('GE6', '003-001'),
   },
   {
     kind: 'choose', id: 'ge:GE7', category: 'ge', label: 'GE7 การปรับตัวให้เข้ากับพลวัตของโลก (2)',
-    needCredits: 2, recYear: 1, recTerm: 2,
-    options: opt(['820-100G7', '820-200G7', '315-201G7', '315-204G7', '895-701G7', '200-103G7', '142-024G7']),
+    needCredits: 2, recYear: 1, recTerm: 2, options: geOptions('GE7'),
   },
   {
     kind: 'bucket', id: 'ge:GE8', category: 'ge', label: 'GE8 รายวิชาเลือก (≥6)',

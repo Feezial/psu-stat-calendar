@@ -42,7 +42,10 @@ function reconstructLines(items: unknown[]): string[] {
 }
 
 export async function extractPdfText(data: ArrayBuffer): Promise<string> {
-  const pdfjsLib = await import('pdfjs-dist')
+  // legacy build = transpiled + polyfill → รองรับเบราว์เซอร์เก่า (iOS Safari ฯลฯ)
+  // แก้บั๊ก "undefined is not a function" ที่เกิดกับบางเครื่อง (build ปกติใช้ modern API ที่บางเบราว์เซอร์ไม่มี)
+  // หมายเหตุ: main build กับ worker ต้องเป็น legacy ทั้งคู่ — postinstall คัด legacy worker มาที่ /pdf.worker.min.mjs
+  const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs')
   pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
   const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(data) }).promise
   const pages: string[] = []

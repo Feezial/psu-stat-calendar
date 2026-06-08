@@ -2,6 +2,33 @@ import { describe, it, expect } from 'vitest'
 import { buildProgram } from '@/lib/curriculum/program-2564'
 import { SEED_6710210764 } from '@/lib/curriculum/seed-6710210764'
 import { computeProgress, suggestNextTerm } from './progress'
+import { GE_CATALOG } from '@/lib/curriculum/ge-catalog'
+import type { TakenCourse } from '@/lib/types'
+
+// BUG repro: options ของ GE choose ต้องครอบคลุม "ทุก" วิชาในแคตตาล็อกของกลุ่มนั้น
+// ไม่งั้นนักศึกษาที่ลงวิชา GE ที่อยู่ในแคตตาล็อกแต่ไม่อยู่ใน subset จะถูกบอกว่า "ยังไม่ครบ"
+describe('GE choose options ครอบคลุมทุกวิชาในแคตตาล็อก (regression "ลงแล้วแต่ไม่ครบ")', () => {
+  const prog = buildProgram('regular', 'ge2565')
+  const groups = ['GE1', 'GE2A', 'GE2B', 'GE3', 'GE4', 'GE5', 'GE6', 'GE7'] as const
+  for (const g of groups) {
+    it(`${g}: ทุกวิชาในแคตตาล็อกต้องอยู่ใน options`, () => {
+      const reqDef = prog.requirements.find((r) => r.id === `ge:${g}`)!
+      const optionCodes =
+        reqDef.kind === 'choose' ? new Set(reqDef.options.map((o) => o.code)) : new Set<string>()
+      const missing = GE_CATALOG.filter((c) => c.group === g && !optionCodes.has(c.code)).map(
+        (c) => c.code,
+      )
+      expect(missing).toEqual([])
+    })
+  }
+  it('ลง 142-026G3 (GE3 ในแคตตาล็อก เดิมหายจาก options) ต้องถูกนับว่า GE3 ครบ', () => {
+    const taken: TakenCourse[] = [
+      { code: '142-026G3', name: 'การเป็นผู้ประกอบการ', credits: 2, grade: 'A', term: '2/2568' },
+    ]
+    const r = computeProgress(prog, taken, [])
+    expect(r.requirements.find((x) => x.id === 'ge:GE3')!.status).toBe('done')
+  })
+})
 
 describe('computeProgress (เคสจริง 6710210764, regular + ge2565)', () => {
   const prog = buildProgram('regular', 'ge2565')
