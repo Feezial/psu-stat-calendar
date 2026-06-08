@@ -1,0 +1,35 @@
+# dependencies & build output (สร้างใหม่ใน image)
+node_modules
+.next
+out
+build
+coverage
+
+# env & secrets — สำคัญ! ห้าม copy เข้า image
+# .env.local ในเครื่องชี้ Supabase local (127.0.0.1) ถ้าหลุดเข้า build จะ override ค่า production
+.env
+.env.*
+
+# version control & editor
+.git
+.gitignore
+.vscode
+.idea
+
+# docs / AI scaffolding / tests — ไม่ต้องใช้ตอน build image
+*.md
+docs
+research
+**/*.test.ts
+**/*.test.tsx
+
+# local-only tooling
+supabase
+.playwright-mcp
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+Dockerfile
+.dockerignore
