@@ -1,11 +1,10 @@
 # syntax=docker/dockerfile:1
 # Next.js 16 (standalone output) — build & run บน Railway ด้วย Docker
-# โครงสร้าง 3 สเตจ: deps → builder → runner (image สุดท้ายเล็ก ไม่มี source/devDeps)
+# ใช้ node:20-slim (Debian/glibc) แทน alpine — มี glibc ในตัว ไม่ต้อง apk add libc6-compat
+# (เลี่ยงปัญหา alpine ดึง package จาก CDN ไม่ได้ตอน build + sharp/native module ทำงานได้ทันที)
 
 # ---------- 1) deps: ติดตั้ง dependencies (cache layer) ----------
-FROM node:20-alpine AS deps
-# libc6-compat: บาง native module (เช่น sharp ของ next/image) ต้องใช้บน alpine
-RUN apk add --no-cache libc6-compat
+FROM node:20-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 # --include=dev: build ต้องใช้ devDeps (typescript, tailwind, react-compiler)
@@ -13,8 +12,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --include=dev --ignore-scripts
 
 # ---------- 2) builder: สร้าง production build ----------
-FROM node:20-alpine AS builder
-RUN apk add --no-cache libc6-compat
+FROM node:20-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -31,19 +29,18 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN mkdir -p public && npm run postinstall && npm run build
 
 # ---------- 3) runner: image รันจริง (เล็กที่สุด) ----------
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-# รันด้วย non-root user เพื่อความปลอดภัย
-RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
 
 # standalone server ต้องการ public/ และ .next/static เพิ่มเอง (Next ไม่ copy ให้ใน standalone)
+# node:20-slim มี user `node` (uid 1000) มาให้แล้ว — รันด้วย non-root เลย
 COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 
-USER nextjs
+USER node
 
 # Railway จะ override PORT ตอน runtime; HOSTNAME=0.0.0.0 ให้ bind ทุก interface (จำเป็น)
 ENV PORT=3000
