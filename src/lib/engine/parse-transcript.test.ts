@@ -83,3 +83,87 @@ describe('parseSisTranscript — รองรับรูปแบบที่�
     expect(r[0].code).toBe('346-111')
   })
 })
+
+// transcript จริงจาก SIS ฉบับ "Study Result" ภาษาอังกฤษ (หัวเทอม "Semester X/YYYY") — ปิดชื่อ/รหัส นศ.
+const realEnglish = `Study Result
+Miss STUDENT NAME Student Id 0000000000
+Prince of Songkla University Hat Yai Campus Faculty of Science Division of Computational Science Statistics
+Semester 1/2024
+Subject Code Subject Name Section Credit Grade
+145-101 COMPANION ANIMALS 01 3 A
+322-101 CALCULUS I 03 3 E
+324-101 GENERAL CHEMISTRY I 02 3 C
+325-101 GENERAL CHEMISTRY LAB I 07 1 B
+330-101 PRINCIPLES OF BIOLOGY I 02 3 D+
+331-101 PRINCIPLES OF BIOLOGY LAB I 04 1 C
+332-101 FUNDAMENTAL PHYSICS 02 3 D
+333-101 FUNDAMENTAL PHYSICS LABORATORY 11 1 B
+388-100 HEALTH FOR ALL 05 1 G
+890-101G1 ESSENTIAL ENGLISH 17 2 S
+950-102 HAPPY AND PEACEFUL LIFE 10 3 A
+Semester Summary
+Semester Credits 21
+Semester Grade Point Average Credits 45.50
+Semester Grade Point Average 2.16
+Cumulative Summary
+Cumulative Credits 21
+Semester 2/2024
+Subject Code Subject Name Section Credit Grade
+315-104G4 DIGITAL TECHNOLOGY LITERACY 03 2 C+
+322-101 CALCULUS I 02 3 D+
+322-102 CALCULUS II 01 3 W
+346-111 PRINCIPLES OF STATISTICS 01 3 D
+346-161 STANDARD STATISTICAL SOFTWARE 01 3 C
+460-001 IDEA TO ENTREPRENEURSHIP 08 1 W
+890-102G1 EVERYDAY ENGLISH 13 2 D
+895-001 GOOD CITIZENS 03 2 A
+Semester Summary
+Semester Credits 15
+Semester 1/2025
+Subject Code Subject Name Section Credit Grade
+003-001 VOL LEADER FOR SUS COM DEL 03 3 A
+142-010G2A ORGANIC THINKING 01 2 C+
+193-031G8 NATURAL THERAPY 04 2 C
+315-103G8 INTRO TO INTELLEC PROTERTY 01 2 A
+315-202G2B THINKING AND REASONING 04 2 C+
+346-221 PROBABILITY FOR STATISTICS 01 3 D+
+346-222 NONPARAMETRIC STATISTICS 01 3 C+
+346-231 INTRODUCTION TO INSURANCE 01 3 B+
+460-001 IDEA TO ENTREPRENEURSHIP 03 1 A
+874-192 LAW RELAT TO OCCU & EVERYDAY 01 2 W
+890-103G1 ENGLISH ON THE GO 10 2 C+
+B03-001G4 GET SMART ON CYBER THREATS 02 2 C
+Semester 2/2025
+Subject Code Subject Name Section Credit Grade
+315-102G8 THE AESTHETIC IN PHOTOGRAPHY 03 2 D
+346-223 MATHEMATICAL STATISTICS I 01 3 D+
+346-232 REGRESSION ANALYSIS 01 4 C
+346-241 MO:LINEAR ALGEBRA & OPERA RES 01 5 C+
+346-261 BASIC COMPUTER PROGRAMMING 01 2 D+
+346-343 INVENTORY MANAGEMENT 01 3 W
+346-442 STOCHASTIC PROCESS 01 3 A
+874-192 LAW RELAT TO OCCU & EVERYDAY 01 2 D
+Created at 06/08/2026 22:18:31 Generated from PSU Student Information System`
+
+describe('parseSisTranscript — transcript จริง "Study Result" ภาษาอังกฤษ (เคสที่เคยพัง)', () => {
+  const rows = parseSisTranscript(realEnglish)
+  it('แยกได้ครบ 39 วิชา (ข้ามหัวตาราง/สรุป/ชื่อ-รหัส นศ.)', () => {
+    expect(rows).toHaveLength(39)
+  })
+  it('ผูกเทอมถูกจากหัว "Semester X/YYYY"', () => {
+    const find = (code: string, grade: string) => rows.find((r) => r.code === code && r.grade === grade)!
+    expect(find('145-101', 'A').term).toBe('1/2024')
+    expect(find('315-104G4', 'C+').term).toBe('2/2024')
+    expect(find('B03-001G4', 'C').term).toBe('1/2025')
+    expect(find('346-442', 'A').term).toBe('2/2025')
+  })
+  it('รองรับเกรด G / S และรหัสขึ้นต้นตัวอักษร (B03-)', () => {
+    expect(rows.find((r) => r.code === '388-100')!.grade).toBe('G')
+    expect(rows.find((r) => r.code === '890-101G1' && r.term === '1/2024')!.grade).toBe('S')
+    expect(rows.find((r) => r.code === 'B03-001G4')).toBeTruthy()
+  })
+  it('ไม่เก็บบรรทัดสรุป/ตัวเลขล้วน เป็นวิชา', () => {
+    expect(rows.every((r) => /^[0-9A-Z]{3}-\d{3}/.test(r.code))).toBe(true)
+    expect(rows.some((r) => r.name === '' || /summary|credits/i.test(r.name))).toBe(false)
+  })
+})
