@@ -78,9 +78,9 @@ export default function LoginPage() {
           <CardDescription>เช็คหน่วยกิตหลักสูตรสถิติ ม.อ.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button variant="outline" className="w-full" onClick={googleAuth} type="button">
+          {/* <Button variant="outline" className="w-full" onClick={googleAuth} type="button">
             เข้าสู่ระบบด้วย Google
-          </Button>
+          </Button> */}
           <div className="relative text-center text-xs text-muted-foreground">
             <span className="bg-card px-2 relative z-10">หรือใช้อีเมล</span>
             <span className="absolute inset-x-0 top-1/2 h-px bg-border" />
