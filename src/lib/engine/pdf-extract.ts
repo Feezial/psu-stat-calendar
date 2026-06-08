@@ -1,5 +1,6 @@
-// ดึงข้อความจากไฟล์ PDF ในเบราว์เซอร์ด้วย pdf.js (lazy-load เฉพาะตอนใช้)
-// คืนข้อความทุกหน้าโดยประกอบเป็นบรรทัดตามตำแหน่ง เพื่อให้ parseSisTranscript แยกต่อได้
+// ประกอบ text items ของ PDF เป็นบรรทัดตามตำแหน่ง เพื่อให้ parseSisTranscript แยกต่อได้
+// ใช้ฝั่ง server เท่านั้น (API /api/parse-pdf ผ่าน unpdf) — ไม่มี pdf.js/worker ฝั่ง browser แล้ว
+// → import PDF ทำงานได้ทุกอุปกรณ์/เบราว์เซอร์ (client แค่อัปโหลดไฟล์, server แกะข้อความ)
 
 interface PdfTextItem {
   str: string
@@ -7,7 +8,7 @@ interface PdfTextItem {
 }
 
 /** ประกอบ text items ของหนึ่งหน้าเป็นบรรทัด (จัดกลุ่มตามแกน y, เรียงตามแกน x) */
-function reconstructLines(items: unknown[]): string[] {
+export function reconstructLines(items: unknown[]): string[] {
   const tis = items.filter(
     (i): i is PdfTextItem =>
       typeof (i as PdfTextItem).str === 'string' && Array.isArray((i as PdfTextItem).transform),
@@ -39,21 +40,4 @@ function reconstructLines(items: unknown[]): string[] {
         .trim(),
     )
     .filter(Boolean)
-}
-
-export async function extractPdfText(data: ArrayBuffer): Promise<string> {
-  // legacy build = transpiled + polyfill → รองรับเบราว์เซอร์เก่า (iOS Safari ฯลฯ)
-  // แก้บั๊ก "undefined is not a function" ที่เกิดกับบางเครื่อง (build ปกติใช้ modern API ที่บางเบราว์เซอร์ไม่มี)
-  // หมายเหตุ: main build กับ worker ต้องเป็น legacy ทั้งคู่ — postinstall คัด legacy worker มาที่ /pdf.worker.min.mjs
-  const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs')
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
-  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(data) }).promise
-  const pages: string[] = []
-  for (let p = 1; p <= pdf.numPages; p++) {
-    const page = await pdf.getPage(p)
-    const content = await page.getTextContent()
-    pages.push(reconstructLines(content.items).join('\n'))
-  }
-  await pdf.cleanup()
-  return pages.join('\n')
 }

@@ -6,7 +6,6 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { parseSisTranscript } from '@/lib/engine/parse-transcript'
-import { extractPdfText } from '@/lib/engine/pdf-extract'
 import type { TakenCourse } from '@/lib/types'
 import { ImportPreview } from '@/components/(App)/import-preview'
 import { toast } from 'sonner'
@@ -25,8 +24,11 @@ export function PdfImportButton({ onImport }: { onImport: (rows: TakenCourse[]) 
     if (!file) return
     setExtracting(true)
     try {
-      const txt = await extractPdfText(await file.arrayBuffer())
-      const parsed = parseSisTranscript(txt)
+      // แกะ PDF ฝั่ง server (ทำงานได้ทุกอุปกรณ์/เบราว์เซอร์ — ไม่มี pdf.js/worker ฝั่ง browser)
+      const res = await fetch('/api/parse-pdf', { method: 'POST', body: file })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`)
+      const parsed = parseSisTranscript(data.text ?? '')
       if (parsed.length === 0) {
         toast.warning('อ่าน PDF ได้ แต่ยังแยกวิชาไม่ได้ — ลองใช้ "วางข้อความ" แทน')
         return
