@@ -129,3 +129,11 @@
     @apply font-sans;
   }
 }
+
+/* จุดกริดจาง ๆ สำหรับพื้นหลังหน้า auth (เฟดขอบด้วย mask) */
+@utility auth-grid {
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 28%, black, transparent 76%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 28%, black, transparent 76%);
+}

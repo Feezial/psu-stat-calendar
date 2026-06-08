@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useAppData } from '../_components/app-data'
 import { CourseFormDialog } from './_components/course-form-dialog'
 import { PasteDialog } from './_components/paste-dialog'
@@ -9,7 +8,6 @@ import { GradeBadge } from '../_components/status'
 import {
   addTaken, updateTaken, deleteTaken, bulkAddTaken,
 } from '@/lib/data/repository'
-import { SEED_6710210764 } from '@/lib/curriculum/seed-6710210764'
 import { termKey } from '@/lib/engine/grades'
 import type { TakenCourse } from '@/lib/types'
 import { Button } from '@/components/ui/button'
@@ -19,7 +17,6 @@ import { Plus, Pencil, Trash2 } from 'lucide-react'
 
 export default function CoursesPage() {
   const { taken, refresh } = useAppData()
-  const [busy, setBusy] = useState(false)
 
   const terms = [...new Set(taken.map((t) => t.term))].sort((a, b) => termKey(b) - termKey(a))
 
@@ -45,18 +42,6 @@ export default function CoursesPage() {
     await refresh()
     toast.success(`นำเข้า ${rows.length} วิชาแล้ว`)
   }
-  async function loadSeed() {
-    setBusy(true)
-    try {
-      await bulkAddTaken(SEED_6710210764)
-      await refresh()
-      toast.success('โหลดข้อมูลตัวอย่างแล้ว')
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'ผิดพลาด')
-    } finally {
-      setBusy(false)
-    }
-  }
 
   return (
     <div className="space-y-5">
@@ -65,17 +50,12 @@ export default function CoursesPage() {
         <CourseFormDialog title="เพิ่มรายวิชา" trigger={<Button><Plus className="size-4" /> เพิ่มรายวิชา</Button>} onSubmit={handleAdd} />
         <PdfImportButton onImport={handleImport} />
         <PasteDialog onImport={handleImport} />
-        {taken.length === 0 && (
-          <Button variant="secondary" onClick={loadSeed} disabled={busy}>
-            โหลดข้อมูลตัวอย่าง (6710210764)
-          </Button>
-        )}
       </div>
 
       {taken.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-muted-foreground">
-            ยังไม่มีข้อมูล — กด &quot;นำเข้า PDF&quot; (อัปโหลดไฟล์จาก SIS), &quot;วางข้อความ&quot; หรือ &quot;โหลดข้อมูลตัวอย่าง&quot;
+            ยังไม่มีข้อมูล — กด &quot;นำเข้า PDF&quot; (อัปโหลดไฟล์จาก SIS) หรือ &quot;วางข้อความ&quot;
           </CardContent>
         </Card>
       ) : (
