@@ -36,6 +36,7 @@ export const GE_CATALOG: GeCourse[] = [
   { code: "473-001G2A", name: "เงินทองต้องรอบรู้", nameEn: "Financial Literacy for a Better Life", credits: 2, group: 'GE2A' },
   { code: "473-002G2A", name: "การอ่านงบการเงินเพื่อ", credits: 2, group: 'GE2A' },
   { code: "142-010G2A", name: "คิดไปข้างหน้า", nameEn: "Organic Thinking", credits: 2, group: 'GE2A' },
+  { code: "388-122G2A", name: "การคิดเชิงตรรกะและการใช้ข้อมูลเพื่อการตัดสินใจอย่างมีเหตุผล", nameEn: "Logical and Data-Driven Thinking for Rational Decision Making", credits: 2, group: 'GE2A' },
   // GE2B
   { code: "895-221G2B", name: "การคิดกับการแก้ปัญหาเชิงระบบ", nameEn: "Thinking and Systematic Problem Solving", credits: 2, group: 'GE2B' },
   { code: "895-222G2B", name: "การคิดเชิงวิพากษ์", nameEn: "Critical Thinking", credits: 2, group: 'GE2B' },
@@ -45,6 +46,7 @@ export const GE_CATALOG: GeCourse[] = [
   { code: "315-202G2B", name: "การคิดกับการใช้เหตุผล", nameEn: "Thinking and Reasoning", credits: 2, group: 'GE2B' },
   { code: "200-108G2B", name: "โมบาและการพัฒนากลยุทธ์", nameEn: "MOBA and Strategy Development", credits: 2, group: 'GE2B' },
   { code: "142-009G2B", name: "การแก้ปัญหาแบบสร้างสรรค์", nameEn: "Creative Problem Solving", credits: 2, group: 'GE2B' },
+  { code: "388-121G2B", name: "กระบวนการคิดเชิงระบบและจิตวิทยาการรู้คิด", nameEn: "Cognitive and System Thinking in Decision-Making", credits: 2, group: 'GE2B' },
   // GE3
   { code: "895-301G3", name: "ก้าวแรกสู่ความเป็นผู้ประกอบการ", nameEn: "First Steps to Entrepreneurship", credits: 2, group: 'GE3' },
   { code: "895-302G3", name: "จุดประกายความคิดผ่านแนวคิดผู้ประกอบการ", nameEn: "Activating Innovative Ideas through an Entrepreneurial Mindset", credits: 2, group: 'GE3' },
