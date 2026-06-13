@@ -2,7 +2,6 @@
 
 import { useAppData } from '@/hooks/use-app-data'
 import { suggestNextTerm } from '@/lib/engine/progress'
-import { buildProgram } from '@/lib/curriculum/program-2564'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
@@ -12,16 +11,11 @@ import {
 import { CircleCheck, CircleAlert } from 'lucide-react'
 
 export default function PlanPage() {
-  const { profile, taken, overrides, saveProfile } = useAppData()
+  const { profile, program, taken, overrides, saveProfile } = useAppData()
   const year = profile.currentYear ?? 3
   const term = profile.currentTerm ?? 1
 
-  const next = suggestNextTerm(
-    buildProgram(profile.plan, profile.geFramework),
-    taken,
-    overrides,
-    { year, term },
-  )
+  const next = suggestNextTerm(program, taken, overrides, { year, term })
   const totalCredits = next.recommended.reduce((s, x) => s + x.credits, 0)
 
   return (

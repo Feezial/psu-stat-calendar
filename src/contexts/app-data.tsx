@@ -3,10 +3,12 @@
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
 import { createClient, hasSupabaseEnv } from '@/lib/supabase/client'
 import {
-  getProfile, listTaken, listOverrides, upsertProfile,
+  getProfile, listTaken, listOverrides, upsertProfile, setMajor as setMajorRepo,
 } from '@/lib/data/repository'
-import type { TakenCourse, Profile, Override } from '@/lib/types'
+import type { TakenCourse, Profile, Override, Major } from '@/lib/types'
 import { buildProgram } from '@/lib/curriculum/program-2564'
+import { buildCompSciProgram } from '@/lib/curriculum/program-cs'
+import type { Program } from '@/lib/curriculum/types'
 import { computeProgress, type ProgressResult } from '@/lib/engine/progress'
 
 interface AppDataValue {
@@ -16,12 +18,14 @@ interface AppDataValue {
   profile: Profile
   taken: TakenCourse[]
   overrides: Override[]
+  program: Program
   progress: ProgressResult
   refresh: () => Promise<void>
   saveProfile: (patch: Partial<Profile>) => Promise<void>
+  setMajor: (major: Major) => Promise<void>
 }
 
-const DEFAULT_PROFILE: Profile = { plan: 'regular', geFramework: 'ge2565', passThreshold: 'D' }
+const DEFAULT_PROFILE: Profile = { major: 'statistics', plan: 'regular', geFramework: 'ge2565', passThreshold: 'D' }
 
 const Ctx = createContext<AppDataValue | null>(null)
 
@@ -87,13 +91,27 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     await upsertProfile(patch)
   }, [])
 
+  // major เก็บใน auth metadata (คนละที่กับ profiles) → ใช้ setMajor แยกต่างหาก
+  const setMajor = useCallback(async (major: Major) => {
+    setProfile((prev) => ({ ...prev, major }))
+    await setMajorRepo(major)
+  }, [])
+
+  const program = useMemo(
+    () =>
+      profile.major === 'comp_sci'
+        ? buildCompSciProgram()
+        : buildProgram(profile.plan, profile.geFramework),
+    [profile.major, profile.plan, profile.geFramework],
+  )
+
   const progress = useMemo(
-    () => computeProgress(buildProgram(profile.plan, profile.geFramework), taken, overrides),
-    [profile.plan, profile.geFramework, taken, overrides],
+    () => computeProgress(program, taken, overrides),
+    [program, taken, overrides],
   )
 
   const value: AppDataValue = {
-    envOk, loading, email, profile, taken, overrides, progress, refresh, saveProfile,
+    envOk, loading, email, profile, taken, overrides, program, progress, refresh, saveProfile, setMajor,
   }
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

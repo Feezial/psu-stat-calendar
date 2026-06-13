@@ -1,6 +1,6 @@
 import type { Program, Requirement, Category } from '@/lib/curriculum/types'
 import type { TakenCourse, Override } from '@/lib/types'
-import { COURSES } from '@/lib/curriculum/courses'
+import { ALL_COURSES } from '@/lib/curriculum/catalog'
 import { assign } from './match'
 
 export interface MissingItem {
@@ -68,7 +68,7 @@ export function computeProgress(
       doneCredits >= need ? 'done' : doneCredits > 0 ? 'partial' : 'none'
     const missing: MissingItem[] =
       r.kind === 'fixed' && status !== 'done'
-        ? [{ code: r.courseCodes[0], name: COURSES[r.courseCodes[0]]?.name ?? r.courseCodes[0], credits: r.credits }]
+        ? [{ code: r.courseCodes[0], name: ALL_COURSES[r.courseCodes[0]]?.name ?? r.courseCodes[0], credits: r.credits }]
         : []
     return {
       id: r.id,
@@ -141,7 +141,7 @@ export function suggestNextTerm(
     const carry = ry != null && (ry < at.year || (ry === at.year && rt < at.term))
     recommended.push({
       code: req.courseCodes[0],
-      name: COURSES[req.courseCodes[0]]?.name ?? req.courseCodes[0],
+      name: ALL_COURSES[req.courseCodes[0]]?.name ?? req.courseCodes[0],
       credits: req.credits,
       reason: carry ? 'คงค้างจากเทอมก่อน' : 'ตามแผนเทอมนี้',
     })

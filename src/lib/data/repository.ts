@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/client'
-import type { TakenCourse, Profile, Override } from '@/lib/types'
+import type { TakenCourse, Profile, Override, Major } from '@/lib/types'
 
 const DEFAULT_PROFILE: Profile = {
+  major: 'statistics',
   plan: 'regular',
   geFramework: 'ge2565',
   passThreshold: 'D',
@@ -15,9 +16,15 @@ async function uid(): Promise<string | null> {
 
 export async function getProfile(): Promise<Profile> {
   const supabase = createClient()
-  const { data } = await supabase.from('profiles').select('*').maybeSingle()
-  if (!data) return DEFAULT_PROFILE
+  // major เก็บใน auth user_metadata (ไม่ต้องแก้ schema profiles) — เลือกตอนสมัคร
+  const [{ data }, { data: userData }] = await Promise.all([
+    supabase.from('profiles').select('*').maybeSingle(),
+    supabase.auth.getUser(),
+  ])
+  const major = (userData.user?.user_metadata?.major as Major) ?? 'statistics'
+  if (!data) return { ...DEFAULT_PROFILE, major }
   return {
+    major,
     plan: data.plan ?? 'regular',
     geFramework: data.ge_framework ?? 'ge2565',
     passThreshold: data.pass_threshold ?? 'D',
@@ -25,6 +32,13 @@ export async function getProfile(): Promise<Profile> {
     currentYear: data.current_year ?? undefined,
     currentTerm: data.current_term ?? undefined,
   }
+}
+
+/** เปลี่ยนสาขา — บันทึกใน auth user_metadata (ไม่ผูกตาราง profiles) */
+export async function setMajor(major: Major): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase.auth.updateUser({ data: { major } })
+  if (error) throw error
 }
 
 export async function upsertProfile(patch: Partial<Profile>): Promise<void> {

@@ -117,7 +117,7 @@ function geOptions(group: GeGroup, ...legacy: string[]): { code: string; credits
   ]
 }
 
-const GE_2565: Requirement[] = [
+export const GE_2565: Requirement[] = [
   {
     kind: 'choose', id: 'ge:GE1', category: 'ge', label: 'GE1 ภาษาและการสื่อสาร (4)',
     needCredits: 4, recYear: 1, recTerm: 2, options: geOptions('GE1'),

@@ -8,7 +8,16 @@ export interface TakenCourse {
   section?: string
 }
 
+/** สาขาที่เลือกตอนสมัคร — กำหนดหลักสูตรทั้งแอป */
+export type Major = 'statistics' | 'comp_sci'
+
+export const MAJOR_LABEL: Record<Major, string> = {
+  statistics: 'สถิติ',
+  comp_sci: 'วิทยาการคอมพิวเตอร์',
+}
+
 export interface Profile {
+  major: Major
   plan: 'regular' | 'coop'
   geFramework: 'ge2565' | 'core2564'
   passThreshold: string // 'D'

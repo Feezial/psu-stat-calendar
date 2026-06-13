@@ -32,8 +32,8 @@ export function Sidebar() {
             <GraduationCap className="size-6 text-white" strokeWidth={2.2} />
           </span>
           <span className="leading-tight">
-            <span className="block font-semibold tracking-tight text-white">PSU Stat</span>
-            <span className="block text-xs text-sidebar-foreground/70">เช็คหน่วยกิต สถิติ</span>
+            <span className="block font-semibold tracking-tight text-white">PSU Credit</span>
+            <span className="block text-xs text-sidebar-foreground/70">เช็คหน่วยกิตหลักสูตร</span>
           </span>
         </Link>
 
