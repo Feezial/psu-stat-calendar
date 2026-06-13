@@ -1,4 +1,4 @@
-import type { Program, Requirement, Category } from './types'
+import type { Program, Requirement, Category, Plan } from './types'
 import { ALL_COURSES } from './catalog'
 import { COURSES_CS } from './courses-cs'
 import { GE_2565 } from './program-2564'
@@ -41,10 +41,6 @@ const CORE_TABLE: [string, number, number][] = [
   ['344-491', 4, 1],
   ['344-492', 4, 2],
 ]
-const CORE_CS: Requirement[] = CORE_TABLE.map(([code, year, term]) =>
-  fixed(code, 'core', { year, term }),
-)
-
 // รหัสที่ไม่ใช่วิชาเอกเลือก (แกน + บังคับ + เตรียมสหกิจ S) — ที่เหลือใน COURSES_CS คือวิชาเอกเลือกทั้งหมด
 const NON_ELECTIVE = new Set<string>([
   '315-101', '345-101', '346-101',
@@ -57,18 +53,22 @@ export const CS_MAJOR_ELEC_CODES = new Set(
   Object.keys(COURSES_CS).filter((c) => !NON_ELECTIVE.has(c)),
 )
 
-// ── วิชาเอกเลือก (27) ──
-const MAJOR_ELEC_CS: Requirement = {
-  kind: 'bucket',
-  id: 'cs_major_elec',
-  category: 'major_elective',
-  label: 'วิชาเอกเลือก (27 นก)',
-  needCredits: 27,
-  eligible: 'cs_major_elec',
-  recYear: 2,
-  recTerm: 2,
-  verifyNote:
-    'ต้องเลือกวิชาในด้านความเชี่ยวชาญด้านใดด้านหนึ่ง (พัฒนาซอฟต์แวร์ / อินเทอร์เน็ตและความมั่นคงปลอดภัยไซเบอร์ / AI และวิทยาการข้อมูล) ไม่น้อยกว่า 12 นก ส่วนที่เหลือเลือกจากด้านใดก็ได้ — ระบบนับรวมหน่วยกิตเท่านั้น ยังไม่ตรวจกฎ 12 นก/ด้าน โปรดยืนยันกับอาจารย์ที่ปรึกษา',
+// ── วิชาเอกเลือก — bucket (สหกิจ 27 นก / ปกติ 33 นก) ──
+const MAJOR_ELEC_NOTE =
+  'ต้องเลือกวิชาในด้านความเชี่ยวชาญด้านใดด้านหนึ่ง (พัฒนาซอฟต์แวร์ / อินเทอร์เน็ตและความมั่นคงปลอดภัยไซเบอร์ / AI และวิทยาการข้อมูล) ไม่น้อยกว่า 12 นก ส่วนที่เหลือเลือกจากด้านใดก็ได้ — ระบบนับรวมหน่วยกิตเท่านั้น ยังไม่ตรวจกฎ 12 นก/ด้าน โปรดยืนยันกับอาจารย์ที่ปรึกษา'
+
+function majorElecCs(needCredits: number): Requirement {
+  return {
+    kind: 'bucket',
+    id: 'cs_major_elec',
+    category: 'major_elective',
+    label: `วิชาเอกเลือก (${needCredits} นก)`,
+    needCredits,
+    eligible: 'cs_major_elec',
+    recYear: 2,
+    recTerm: 2,
+    verifyNote: MAJOR_ELEC_NOTE,
+  }
 }
 
 // ── วิชาเลือกเสรี (6) ──
@@ -85,21 +85,26 @@ const FREE_CS: Requirement = {
 }
 
 /**
- * หลักสูตร วท.บ. วิทยาการคอมพิวเตอร์ (ปรับปรุง พ.ศ. 2569) — รวม 125 นก
- * โครงสร้าง: GE 24 (กรอบ GE2565 ร่วมกับสถิติ) + แกนวิทย์-คณิต-เทคโนฯ 12 + เอกบังคับ 56 + เอกเลือก 27 + เสรี 6
- * เป็นหลักสูตรสหกิจศึกษา (CWIE) — มี 344-491 โครงงาน + 344-492 สหกิจ + 344-494 เตรียมสหกิจ (S)
+ * หลักสูตร วท.บ. วิทยาการคอมพิวเตอร์ (ปรับปรุง พ.ศ. 2569) — รวม 125 นก ทั้งสองแผน (GE2565)
+ * - แผนสหกิจ (coop): เอกบังคับ 56 (รวม 344-491 โครงงาน + 344-492 สหกิจศึกษา 6 + 344-494 เตรียมสหกิจ S) + เอกเลือก 27
+ * - แผนปกติ (regular): ตัด 344-492 สหกิจศึกษา → เอกบังคับ 50 + เอกเลือก 33 (ยังมี 344-491 โครงงาน)
+ * ร่วม: แกนวิทย์-คณิต-เทคโนฯ 12 + GE 24 (กรอบเดียวกับสถิติ) + เสรี 6
  */
-export function buildCompSciProgram(): Program {
+export function buildCompSciProgram(plan: Plan = 'coop'): Program {
+  const coop = plan === 'coop'
+  // แผนปกติไม่ลงสหกิจศึกษา (344-492) — ย้ายหน่วยกิตไปวิชาเอกเลือกแทน (27→33)
+  const coreTable = coop ? CORE_TABLE : CORE_TABLE.filter(([c]) => c !== '344-492')
+  const core = coreTable.map(([code, year, term]) => fixed(code, 'core', { year, term }))
   const requirements: Requirement[] = [
     ...FOUNDATION_CS,
-    ...CORE_CS,
-    MAJOR_ELEC_CS,
+    ...core,
+    majorElecCs(coop ? 27 : 33),
     ...GE_2565,
     FREE_CS,
   ]
   return {
-    id: 'cs2569-coop-ge2565',
-    plan: 'coop',
+    id: `cs2569-${plan}-ge2565`,
+    plan,
     geFramework: 'ge2565',
     totalCredits: 125,
     requirements,

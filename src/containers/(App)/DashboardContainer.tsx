@@ -42,7 +42,7 @@ export default function DashboardPage() {
           <div className="space-y-2">
             <p className="text-sm font-medium text-white/65">
               {profile.major === 'comp_sci'
-                ? `วท.บ. ${MAJOR_LABEL.comp_sci} · หลักสูตรสหกิจ`
+                ? `วท.บ. ${MAJOR_LABEL.comp_sci} · ${profile.plan === 'coop' ? 'แผนสหกิจ' : 'แผนปกติ'}`
                 : `${profile.plan === 'coop' ? 'แผนสหกิจ' : 'แผนปกติ'} · ${profile.geFramework === 'core2564' ? 'สาระ 2564' : 'GE 2565'} · วท.บ. ${MAJOR_LABEL.statistics}`}
             </p>
             <h2 className="flex items-center gap-2 text-2xl font-semibold tracking-tight md:text-[1.7rem]">

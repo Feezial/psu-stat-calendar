@@ -100,7 +100,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const program = useMemo(
     () =>
       profile.major === 'comp_sci'
-        ? buildCompSciProgram()
+        ? buildCompSciProgram(profile.plan)
         : buildProgram(profile.plan, profile.geFramework),
     [profile.major, profile.plan, profile.geFramework],
   )

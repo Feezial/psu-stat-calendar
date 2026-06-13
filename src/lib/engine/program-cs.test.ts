@@ -3,8 +3,8 @@ import { buildCompSciProgram, CS_MAJOR_ELEC_CODES } from '@/lib/curriculum/progr
 import { computeProgress } from './progress'
 import type { TakenCourse } from '@/lib/types'
 
-describe('หลักสูตรวิทยาการคอมพิวเตอร์ 2569 — โครงสร้าง', () => {
-  const prog = buildCompSciProgram()
+describe('หลักสูตรวิทยาการคอมพิวเตอร์ 2569 — แผนสหกิจ (coop)', () => {
+  const prog = buildCompSciProgram('coop')
   const r = computeProgress(prog, [], [])
   const need = (c: string) => r.categories.find((x) => x.category === c)!.needCredits
 
@@ -27,10 +27,35 @@ describe('หลักสูตรวิทยาการคอมพิวเ�
     expect(sum).toBe(125)
   })
 
-  it('มีวิชาบังคับหลัก (344-211 โครงสร้างข้อมูล, 344-491 โครงงาน) และ GE8 bucket', () => {
-    expect(prog.requirements.find((x) => x.id === 'fixed:344-211')).toBeTruthy()
+  it('มี 344-492 สหกิจศึกษา + 344-491 โครงงาน + GE8 bucket', () => {
+    expect(prog.requirements.find((x) => x.id === 'fixed:344-492')).toBeTruthy()
     expect(prog.requirements.find((x) => x.id === 'fixed:344-491')).toBeTruthy()
     expect(prog.requirements.find((x) => x.id === 'ge:GE8')).toBeTruthy()
+  })
+})
+
+describe('หลักสูตรวิทยาการคอมพิวเตอร์ 2569 — แผนปกติ (regular)', () => {
+  const prog = buildCompSciProgram('regular')
+  const r = computeProgress(prog, [], [])
+  const need = (c: string) => r.categories.find((x) => x.category === c)!.needCredits
+
+  it('รวม 125 หน่วยกิต และเป็นแผนปกติ', () => {
+    expect(prog.totalCredits).toBe(125)
+    expect(prog.plan).toBe('regular')
+  })
+
+  it('ปกติ: บังคับ 50 (ตัดสหกิจ 6) / เอกเลือก 33 (เพิ่ม 6) — หมวดอื่นเท่าเดิม', () => {
+    expect(need('foundation')).toBe(12)
+    expect(need('core')).toBe(50)
+    expect(need('major_elective')).toBe(33)
+    expect(need('ge')).toBe(24)
+    expect(need('free_elective')).toBe(6)
+    expect(r.categories.reduce((s, c) => s + c.needCredits, 0)).toBe(125)
+  })
+
+  it('ไม่มี 344-492 สหกิจศึกษา แต่ยังมี 344-491 โครงงาน', () => {
+    expect(prog.requirements.find((x) => x.id === 'fixed:344-492')).toBeFalsy()
+    expect(prog.requirements.find((x) => x.id === 'fixed:344-491')).toBeTruthy()
   })
 })
 
